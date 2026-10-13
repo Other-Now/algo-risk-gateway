@@ -1,0 +1,25 @@
+unit tests: 83 checks, 0 failures
+
+property test: seed 1, 18225332 operations, 10997020 orders (1468908 accepted), 71182 state comparisons, 26258 kills (51846 mass-cancels)
+decision coverage (every reason must be exercised):
+  OK                      1468908
+  BAD_INSTRUMENT           770317
+  BAD_ORDER               1099591
+  DUPLICATE_ORDER_ID       274151
+  ALGO_ID_MISSING          355207
+  ALGO_UNKNOWN             530770
+  KILL_GLOBAL              302444
+  KILL_ALGO                120130
+  KILL_INSTRUMENT          142170
+  PRICE_BAND_DAILY        1008375
+  PRICE_BAND_LTP          2006058
+  MAX_QTY                  415047
+  MAX_VALUE                641854
+  POSITION_LIMIT           142840
+  SELF_TRADE               538898
+  UNREGISTERED_OPS         428244
+  RATE_LIMIT               681968
+  OTR_THROTTLE              70048
+property test: PASS -- gate and oracle agreed on every decision
+
+TOTAL: 84 checks, 0 failures

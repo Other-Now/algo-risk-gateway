@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
+          cmake --build build -j
+      - name: tests (unit + 5M-op property test)
+        run: ./build/arg_tests --ops 5000000
+      - name: simulated session -> replay -> recon
+        run: |
+          mkdir -p out
+          ./build/arg_sim --out out
+          ./build/arg_replay out/audit.log
+          # recon must find exactly the injected breaks: exit 4 = breaks found
+          set +e; ./build/arg_recon out/audit.log out/trades.csv; rc=$?; set -e
+          test "$rc" -eq 4
+      - name: mutation test (every planted bug must be caught)
+        run: python3 tools/mutants.py --ops 300000
+        env:
+          CXX: ${{ matrix.compiler }}
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: build (ASan + UBSan)
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DARG_SANITIZE=ON
+          cmake --build build -j
+      - name: tests under sanitizers
+        run: ./build/arg_tests --ops 300000
+      - name: sim + replay under sanitizers
+        run: |
+          mkdir -p out
+          ./build/arg_sim --out out --seconds 2
+          ./build/arg_replay out/audit.log
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        run: |
+          cmake -S . -B build
+          cmake --build build --config Release
+      - name: tests
+        run: ./build/Release/arg_tests.exe --ops 2000000
+      - name: sim + replay
+        shell: bash
+        run: |
+          mkdir -p out
+          ./build/Release/arg_sim.exe --out out
+          ./build/Release/arg_replay.exe out/audit.log

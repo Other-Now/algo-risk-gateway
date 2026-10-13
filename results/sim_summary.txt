@@ -1,0 +1,54 @@
+arg_sim: seed 42, 10.0 s simulated (100000 steps of 100 us), 0.07 s wall
+audit records 221843, head digest cd8267ffb276462d...
+wire: 86534 bytes of OUCH EnterOrder
+
+decisions by reason:
+  OK                       1745  ( 21.0%)
+  BAD_ORDER                  55  (  0.7%)
+  ALGO_ID_MISSING            67  (  0.8%)
+  ALGO_UNKNOWN               52  (  0.6%)
+  KILL_GLOBAL              1952  ( 23.5%)
+  KILL_ALGO                3100  ( 37.3%)
+  KILL_INSTRUMENT           110  (  1.3%)
+  PRICE_BAND_DAILY           43  (  0.5%)
+  PRICE_BAND_LTP             36  (  0.4%)
+  MAX_QTY                    33  (  0.4%)
+  MAX_VALUE                 241  (  2.9%)
+  POSITION_LIMIT            185  (  2.2%)
+  SELF_TRADE                268  (  3.2%)
+  UNREGISTERED_OPS           80  (  1.0%)
+  RATE_LIMIT                342  (  4.1%)
+  total                    8309
+
+per algo: sent / accepted / OTR (orders:trades)
+  1 MM (registered, quotes both sides)      2196    1143     2568:1594  = 1.6
+  2 MOMO (registered, IOC taker)            1582     411      411:630   = 0.7
+  3 RETAIL (unregistered, bursty)            150      40       40:0     = 40.0
+  4 FATFINGER (registered, bad orders)       272      26       26:15    = 1.7
+  5 CHURN (registered, cancel/replace)      3990     125      250:0     = 250.0  [KILLED]
+
+kill events:
+  t=+  0.323 s  ALGO       id 5   OTR_BREACH      -> 0 mass-cancels, 0 flatten orders
+  t=+  4.000 s  INSTRUMENT id 2   MANUAL          -> 1 mass-cancels, 0 flatten orders
+  t=+  8.050 s  GLOBAL     id 0   HEARTBEAT_LOST  -> 10 mass-cancels, 21 flatten orders
+
+safety checks:
+  self-trades seen by the exchange      0
+  orders accepted while killed (audit)  0
+  open orders at end of day (gate)      3
+  fills dropped before the gate         3 (fault injection)
+
+end-of-day positions (gate view):
+  GOLD          0
+  SILVER        0
+  CRUDE         0
+  NATGAS        0
+  COPPER        6
+  ZINC          0
+
+recon: internal fills 2307, exchange fills 2310, matched 2307, breaks 5
+  BREAK MISSING_INTERNAL  exec 331      order 550 instr 4 S 3 @ 81935
+  BREAK MISSING_INTERNAL  exec 662      order 1216 instr 3 S 8 @ 24600
+  BREAK MISSING_INTERNAL  exec 993      order 2268 instr 3 S 14 @ 24740
+  BREAK POSITION          exec 0        instr 3 internal 0 exchange -22 (diff -22)
+  BREAK POSITION          exec 0        instr 4 internal 6 exchange 3 (diff -3)

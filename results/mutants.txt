@@ -1,0 +1,12 @@
+stp-allows-equal-price           KILLED  unit-fails=11  property=FAIL  first-op=123  order 66: gate OK, oracle SELF_TRADE
+position-ignores-open-orders     KILLED  unit-fails=14  property=FAIL  first-op=5418  order 2964: gate RATE_LIMIT, oracle POSITION_LIMIT
+cancel-request-frees-limit       KILLED  unit-fails=12  property=FAIL  first-op=256  state diverged
+ltp-never-updated                KILLED  unit-fails=13  property=FAIL  first-op=54  order 32: gate OK, oracle PRICE_BAND_LTP
+bucket-clock-not-advanced        KILLED  unit-fails=15  property=FAIL  first-op=65  order 37: gate OK, oracle RATE_LIMIT
+ops-cap-off-by-one               KILLED  unit-fails=13  property=FAIL  first-op=361  order 195: gate OK, oracle UNREGISTERED_OPS
+algo-kill-not-enforced           KILLED  unit-fails=13  property=FAIL  first-op=547  order 288: gate PRICE_BAND_LTP, oracle KILL_ALGO
+partial-fill-leaks-open-qty      KILLED  unit-fails=12  property=FAIL  first-op=163  order 92: gate POSITION_LIMIT, oracle OK
+ltp-band-uses-wrong-sign         KILLED  unit-fails=12  property=FAIL  first-op=138  order 75: gate OK, oracle PRICE_BAND_LTP
+mass-cancel-forgets-scope        KILLED  unit-fails=11  property=FAIL  first-op=541  mass-cancel list differs
+
+10/10 mutants killed

@@ -1,0 +1,36 @@
+arg_bench: 2000000 orders, 16 instruments, 8 algos, ~1000 open orders steady state
+TSC: 0.4167 ns/tick, probe overhead 14 ticks (5.8 ns, subtracted)
+
+1. per-check latency (accepted orders; every check runs)        p50       p99     p99.9  ns
+   sanity+dup-id                                                  10.0      28.3     133.3
+   algo-id                                                        17.5      82.5     372.4
+   kill-switch                                                     0.8       1.7       2.5
+   price-bands                                                     0.8       1.7       2.5
+   qty/value                                                       0.8       1.7       5.8
+   position(worst)                                                 3.3       5.8       9.2
+   self-trade                                                      0.8       2.5       6.7
+   rate+OTR                                                        7.5      13.3      23.3
+   commit                                                        129.2     296.6     375.0
+   audit-append                                                    5.8      15.0      24.2
+   sum of stages (probed run)                                    182.5     375.8     605.6
+
+2. whole gate, one probe pair per order                          p50       p99     p99.9  ns
+   submit() without audit                                        170.0     373.2     583.2
+   submit() with audit append                                    175.8     367.4     569.2
+   3. accept -> OUCH bytes in buffer (gate+audit+encode)         175.0     367.4     571.6
+
+4. un-probed: 2000000 submits (+2000000 retires) in 0.653 s = 326.7 ns per submit incl. retire, 3.06 M orders/s (2000000 accepted)
+5. audit seal (off the order path), 3999000 records:
+   SHA-256 chain only        635 ns/record  (1.57 M records/s)
+   chain + write to disk     1485 ns/record  (0.67 M records/s)
+
+6. kill switch (global, in-process exchange sim; no network)
+   resting   time-to-block   kill() returns   time-to-quiet   cancels   orders after kill
+        10          2.8 us           2.6 us          7.2 us        10   0
+       100          6.3 us           6.3 us         32.4 us       100   0
+      1000         72.2 us          72.1 us        350.2 us      1000   0
+     10000        691.6 us         691.3 us         3.48 ms     10000   0
+   (median of 21; time-to-block = kill() + one rejected submit; time-to-quiet = until the exchange
+    has confirmed every cancel and the gate holds zero open orders)
+
+(sink 1)

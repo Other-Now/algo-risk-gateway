@@ -1,0 +1,8 @@
+build*/
+*.exe
+*.obj
+*.pdb
+*.ilk
+results/audit.log
+results/trades.csv
+arg_test_audit.log
