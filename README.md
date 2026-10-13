@@ -27,6 +27,7 @@ All numbers are from an Intel i5-9300H laptop running Windows 11, built with MSV
 | Property test: gate vs. independent oracle | **33M random orders (4.4M accepted), 3 seeds × 20M operations: 0 disagreements** |
 | Mutation test: realistic bugs planted in the gate | **10/10 caught** (9 within ~550 random operations; the slowest at ~5,400) |
 | Replay of a 221,843-record session log | Byte-identical; a flipped byte breaks the chain at that record; a forged-and-rehashed decision fails replay at that record |
+| Determinism across compilers | Same session → **identical SHA-256 head digest on MSVC, GCC and Clang** (CI) |
 | Kill switch, 1,000 resting orders | Blocked in 72 µs; **quiet (all cancels confirmed) in 350 µs**; 0 orders accepted after the kill |
 | Simulated session (5 algos, 6 instruments, 10 s) | 0 self-trades reached the exchange; 0 orders accepted while killed; recon found exactly the 3 injected dropped fills |
 
